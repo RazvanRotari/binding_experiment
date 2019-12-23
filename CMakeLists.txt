@@ -21,3 +21,5 @@ set_target_properties(${TARGET} PROPERTIES
 	CXX_STANDARD_REQUIRED ON
 	)
 target_link_libraries(${TARGET} ${CONAN_LIBS})
+add_test(NAME mytest
+		 COMMAND ${TARGET})
