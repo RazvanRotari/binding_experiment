@@ -9,10 +9,10 @@ install:
   - pip install conan
 # Automatic detection of your arch, compiler, etc.
   - conan user
-  - conan profile update settings.compiler.libcxx=libstdc++11 default
 script:
 # Download dependencies and build project
   - conan install .
+  - conan profile update settings.compiler.libcxx=libstdc++11 default
 # Call your build system
   - cmake . -G "Unix Makefiles"
   - cmake --build .
