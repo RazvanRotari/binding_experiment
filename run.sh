@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
-cd build
-ninja -j2 && ./bin/binding_example
+
+./build/bin/binding_example $@
