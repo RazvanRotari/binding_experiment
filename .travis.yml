@@ -11,6 +11,7 @@ install:
   - conan user
 script:
 # Download dependencies and build project
+  - cd cpp
   - conan install .
   - conan profile update settings.compiler.libcxx=libstdc++11 default
 # Call your build system

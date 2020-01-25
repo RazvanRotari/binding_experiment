@@ -11,6 +11,8 @@ add_executable(${TARGET}
 	src/main.cpp
 	)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	add_compile_options (-fdiagnostics-color=always)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color=always")

@@ -4,7 +4,7 @@
 #include "JsonBind.hpp"
 #include "SimpleStruct.hpp"
 
-static const std::string jsonData = "{\"a\":1,\"b\":\"2\", \"c\": 3.0}";
+static const std::string jsonData = "{\"a\":1,\"b\":\"2\", \"c\": \"3.0\"}";
 namespace baseline {
 TEST_CASE("Json baseline benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
@@ -26,8 +26,7 @@ TEST_CASE("JsonParam") {
     }
 
     SECTION("1 element") {
-        const auto output = readJson<SimpleStruct>(
-jsonData, description);
+        const auto output = readJson<SimpleStruct>(jsonData, description);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
@@ -40,8 +39,7 @@ TEST_CASE("JsonParam benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}", description); };
 
     BENCHMARK("1 element") {
-        return readJson<SimpleStruct>(jsonData,
-                                      description);
+        return readJson<SimpleStruct>(jsonData, description);
     };
 }
 }  // namespace param
@@ -64,8 +62,7 @@ TEST_CASE("Json Description") {
     }
 
     SECTION("1 element") {
-        const auto output =
-            readJson<SimpleStruct>(jsonData);
+        const auto output = readJson<SimpleStruct>(jsonData);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
@@ -73,9 +70,7 @@ TEST_CASE("Json Description") {
 TEST_CASE("Json Description benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
 
-    BENCHMARK("1 element") {
-        return readJson<SimpleStruct>(jsonData);
-    };
+    BENCHMARK("1 element") { return readJson<SimpleStruct>(jsonData); };
 }
 }  // namespace descriptor
 
@@ -87,6 +82,19 @@ struct Descriptor<SimpleStruct> {
         std::tuple<SETTER("a", &SimpleStruct::a), SETTER("b", &SimpleStruct::b),
                    SETTER("c", &SimpleStruct::c)>;
 };
+/*
+template <>
+struct Descriptor<SimpleStruct> {
+    using type =
+        std::tuple<std::pair<decltype([]() { return "a"; }),
+                             decltype(setter<&SimpleStruct::a>())>,
+                   std::pair<decltype([]() { return "b"; }),
+                             decltype(setter<&SimpleStruct::b>())>,
+                   std::pair<decltype([]() { return "c"; }),
+                             decltype(setter<&SimpleStruct::c>())> >;
+};
+*/
+
 
 TEST_CASE("JsonCompileParam") {
     SECTION("Empty") {
@@ -95,17 +103,14 @@ TEST_CASE("JsonCompileParam") {
     }
 
     SECTION("1 element") {
-        const auto output =
-            readJson<SimpleStruct>(jsonData);
+        const auto output = readJson<SimpleStruct>(jsonData);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
 TEST_CASE("JsonCompileParam benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
 
-    BENCHMARK("1 element") {
-        return readJson<SimpleStruct>(jsonData);
-    };
+    BENCHMARK("1 element") { return readJson<SimpleStruct>(jsonData); };
 }
 
 }  // namespace compile_description

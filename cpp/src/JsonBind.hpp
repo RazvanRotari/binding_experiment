@@ -41,6 +41,14 @@ ReturnType readJson(std::string_view jsonString,
     };
 
     std::apply([&](auto&... x) { (..., populateObject(x)); }, description);
+    /* The above expands to this
+     * [&](auto& std::pair<char*, int SimpleStruct::*> x1,
+     *	   auto& std::pair<char*, std::string SimpleStruct::*> x2,
+     *     auto& std::pair<char*, double SimpleStruct::*> x3) {
+     *
+     *  (populateObject(x1), populateObject(x2), populateObject(x3));
+     * }
+     * */
     return ret;
 }
 }  // namespace param
@@ -97,6 +105,9 @@ struct Descriptor {
 template <auto Value>
 struct PtrMemberExtractor {};
 
+
+/*  int SimpleStruct::*a */
+
 template <typename Class, typename Result, Result Class::*Value>
 struct PtrMemberExtractor<Value> {
     // add members using Class, Result, and value here
@@ -112,6 +123,13 @@ constexpr auto setter() {
         [](Def::containing_type & obj, const Def::result& value) constexpr {
         obj.*(Def::value) = value;
     };
+
+	/*
+    constexpr auto setterf =
+        [](SimpleStruct & obj, const int& value) constexpr {
+        obj.*a = value;
+    };
+	 * */
     return setterf;
 }
 
@@ -129,11 +147,25 @@ ReturnType readJson(std::string_view jsonString) {
 
     auto populateObject = [&](const auto& elemDesc) {
         auto setter = std::get<1>(elemDesc);
-        setter(ret, j[std::get<0>(elemDesc)()]);
+        auto keyFunc = std::get<0>(elemDesc);
+        setter(ret, j[(keyFunc())]);
     };
     const typename Descriptor<ReturnType>::type desc;
     std::apply([&](auto&... x) { (..., populateObject(x)); }, desc);
-    return ret;
+
+    /*The above expands to this
+      [&](std::pair<decltype([]() { return "a"; }),
+                    decltype(setter<&SimpleStruct::a>())> x1,
+
+          std::pair<decltype([]() { return "b"; }),
+                    decltype(setter<&SimpleStruct::b>())> x2,
+
+          std::pair<decltype([]() { return "c"; }),
+                    decltype(setter<&SimpleStruct::c>())> x3) {
+        (populateObject(x1), populateObject(x2), populateObject(x3));
+    } 
+	*/
+        return ret;
 }
 
 }  // namespace compile_description
