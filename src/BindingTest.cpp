@@ -4,6 +4,16 @@
 #include "JsonBind.hpp"
 #include "SimpleStruct.hpp"
 
+static const std::string jsonData = "{\"a\":1,\"b\":\"2\", \"c\": 3.0}";
+namespace baseline {
+TEST_CASE("Json baseline benchmark") {
+    BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
+
+    BENCHMARK("1 element") { return readJson<SimpleStruct>(jsonData); };
+}
+
+}  // namespace baseline
+
 namespace param {
 TEST_CASE("JsonParam") {
     const auto description =
@@ -17,7 +27,7 @@ TEST_CASE("JsonParam") {
 
     SECTION("1 element") {
         const auto output = readJson<SimpleStruct>(
-            "{\"a\":1,\"b\":\"2\", \"c\": 3.0}", description);
+jsonData, description);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
@@ -30,7 +40,7 @@ TEST_CASE("JsonParam benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}", description); };
 
     BENCHMARK("1 element") {
-        return readJson<SimpleStruct>("{\"a\":1,\"b\":\"2\", \"c\": 3.0}",
+        return readJson<SimpleStruct>(jsonData,
                                       description);
     };
 }
@@ -55,7 +65,7 @@ TEST_CASE("Json Description") {
 
     SECTION("1 element") {
         const auto output =
-            readJson<SimpleStruct>("{\"a\":1,\"b\":\"2\", \"c\": 3.0}");
+            readJson<SimpleStruct>(jsonData);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
@@ -64,7 +74,7 @@ TEST_CASE("Json Description benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
 
     BENCHMARK("1 element") {
-        return readJson<SimpleStruct>("{\"a\":1,\"b\":\"2\", \"c\": 3.0}");
+        return readJson<SimpleStruct>(jsonData);
     };
 }
 }  // namespace descriptor
@@ -86,7 +96,7 @@ TEST_CASE("JsonCompileParam") {
 
     SECTION("1 element") {
         const auto output =
-            readJson<SimpleStruct>("{\"a\":1,\"b\":\"2\", \"c\": 3.0}");
+            readJson<SimpleStruct>(jsonData);
         REQUIRE(output == SimpleStruct{1, "2", 3.0});
     }
 }
@@ -94,7 +104,8 @@ TEST_CASE("JsonCompileParam benchmark") {
     BENCHMARK("Empty") { return readJson<SimpleStruct>("{}"); };
 
     BENCHMARK("1 element") {
-        return readJson<SimpleStruct>("{\"a\":1,\"b\":\"2\", \"c\": 3.0}");
+        return readJson<SimpleStruct>(jsonData);
     };
 }
+
 }  // namespace compile_description
