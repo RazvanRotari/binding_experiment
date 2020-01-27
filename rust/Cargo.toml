@@ -1,11 +1,33 @@
 [package]
-name = "bind_test"
+name = "rs-bind"
 version = "0.1.0"
-authors = ["Razvan Rotari <razvanrotari@gmail.com>"]
-edition = "2018"
+authors = ["Cristian Neamtu"]
+autobenches = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+bench = false
 
 [dependencies]
 json = "0.12.1"
-bind_lib = { path = "./src/bind_lib" }
+csv = "1.1.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dependencies.bind-gen]
+path = "./bind-gen"
+
+[dependencies.rusqlite]
+version = "0.21.0"
+features = ["bundled"]
+
+[dev-dependencies]
+criterion = "0.3.0"
+plotters = "0.2.12"
+
+[[bench]]
+name = "json_bench"
+harness = false
+
+[[bench]]
+name = "json_simple"
+harness = false
